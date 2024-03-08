@@ -8,7 +8,7 @@ namespace SmsService.Models
         [Key]
         public int Id { get; set; }
 
-        public string Message { get; set; }
+        public string Message { get; set; } 
         [Phone]
         public string PhoneNumber { get; set; }
         [MaxLength(Constants.Constants.maxSmsMessageLength)]

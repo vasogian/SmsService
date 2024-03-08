@@ -26,15 +26,20 @@ namespace SmsService.Controllers
             _cypriotVendor = cypriotVendor;
             _restVendor = restVendor;
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> SendSms(SmsMessageRequestViewModel message)
         {
             var phoneNumber = message.PhoneNumber;
 
+            if (String.IsNullOrEmpty(phoneNumber))
+            {
+                return BadRequest();
+            }
+            
             string greekFromat = @"^\+30[2-9][0-9]{9}$";
 
-            string cypriot = @"^\+357[2-9][0-9]{6,7}$"; 
+            string cypriot = @"^\+357[2-9][0-9]{6,7}$";
 
             string restPhoneNumbers = @"^([\+]?123[-]?|[0])?[1-9][0-9]{8}$";
 
@@ -43,28 +48,33 @@ namespace SmsService.Controllers
             bool isCypriot = Regex.IsMatch(phoneNumber, cypriot);
 
             bool isOther = Regex.IsMatch(phoneNumber, restPhoneNumbers);
-
-            if (phoneNumber == null)
-            {
-                return BadRequest();
-            }
+          
             if (isGreek)
             {
-                var mappedMessage = _mapper.Map<SmsMessage>(message);
-                await this._greekVendor.SendMessage(message);
-                return CreatedAtRoute("", new { Id = message.Id }, message);
+                var mappedMessageRequest = _mapper.Map<SmsMessage>(message);
+                await this._greekVendor.SendMessage(mappedMessageRequest);
+
+                var mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(mappedMessageRequest);
+                return CreatedAtRoute("", new { Id = mappedResponse.Id }, mappedResponse);
 
             }
 
             else if (isCypriot)
             {
-                await this._cypriotVendor.SendMessage(message);
-                return CreatedAtRoute("", new { Id = message.Id }, message);
+                var mappedMessageRequest = _mapper.Map<SmsMessage>(message);
+
+                await this._cypriotVendor.SendMessage(mappedMessageRequest);
+
+                var mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(mappedMessageRequest);
+
+                return CreatedAtRoute("", new { Id = mappedResponse.Id }, mappedResponse);
             }
             else if (isOther)
             {
-                await this._restVendor.SendMessage(message);
-                return CreatedAtRoute("", new { Id = message.Id }, message);
+                var mappedMessageRequest = _mapper.Map<SmsMessage>(message);
+                await this._restVendor.SendMessage(mappedMessageRequest);
+                var mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(mappedMessageRequest);
+                return CreatedAtRoute("", new { Id = mappedResponse.Id }, mappedResponse);
             }
 
             return BadRequest();
