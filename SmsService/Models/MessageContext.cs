@@ -8,7 +8,7 @@ namespace SmsService.Models
            : base(options)
         {
         }
-        public DbSet<SmsMessage> Messages { get; set; }
+        public DbSet<SmsMessage>? Messages { get; set; }
       
     }
 }

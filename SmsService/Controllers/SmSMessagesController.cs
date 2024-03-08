@@ -6,6 +6,8 @@ using SmsService.Services;
 using System.Linq;
 using SmsService.Validation;
 using System.Text.RegularExpressions;
+using SmsService.ViewModels;
+using AutoMapper;
 
 namespace SmsService.Controllers
 {
@@ -13,31 +15,28 @@ namespace SmsService.Controllers
     [ApiController]
     public class SmSMessagesController : ControllerBase
     {
-        //private readonly SMSVendorGR _greekVendor;
-        //private readonly SMSVendorCY _cypriotVendor;
-        //private readonly SMSVendorRest _restVendor;
-        private readonly IEnumerable<ISms> _messageSenders;
-        public SmSMessagesController(IEnumerable<ISms> messageSenders)
+        private readonly SMSVendorGR _greekVendor;
+        private readonly SMSVendorCY _cypriotVendor;
+        private readonly SMSVendorRest _restVendor;
+        private readonly IMapper _mapper;
+        public SmSMessagesController(SMSVendorGR greekVendor, SMSVendorCY cypriotVendor, SMSVendorRest restVendor, IMapper mapper)
         {
-
-           _messageSenders = messageSenders;
+            _mapper = mapper;
+            _greekVendor = greekVendor;
+            _cypriotVendor = cypriotVendor;
+            _restVendor = restVendor;
         }
-
+        
         [HttpPost]
-        public async Task<ActionResult> SendSms(SmsMessage message)
+        public async Task<IActionResult> SendSms(SmsMessageRequestViewModel message)
         {
-
-            //foreach(var sender in _messageSenders)
-            //{
-            //    sender.SendMessage(message);
-            //}    
             var phoneNumber = message.PhoneNumber;
 
-            string greekFromat = @"^([\+]?30[-]?|[0])?[1-9][0-9]{8}$";
+            string greekFromat = @"^\+30[2-9][0-9]{9}$";
 
-            string cypriot = @"^([\+]?3579[-]?|[0])?[1-9][0-9]{8}$";
+            string cypriot = @"^\+357[2-9][0-9]{6,7}$"; 
 
-            string restPhoneNumbers = @"^([\+]?33[-]?|[0])?[1-9][0-9]{8}$";
+            string restPhoneNumbers = @"^([\+]?123[-]?|[0])?[1-9][0-9]{8}$";
 
             bool isGreek = Regex.IsMatch(phoneNumber, greekFromat);
 
@@ -51,22 +50,24 @@ namespace SmsService.Controllers
             }
             if (isGreek)
             {
-                var response = _greekVendor.SendMessage(message);
-                return Ok(response);
+                var mappedMessage = _mapper.Map<SmsMessage>(message);
+                await this._greekVendor.SendMessage(message);
+                return CreatedAtRoute("", new { Id = message.Id }, message);
+
             }
 
             else if (isCypriot)
             {
-                var response = _cypriotVendor.SendMessage(message);
-                return Ok(response);
+                await this._cypriotVendor.SendMessage(message);
+                return CreatedAtRoute("", new { Id = message.Id }, message);
             }
             else if (isOther)
             {
-                var response = _restVendor.SendMessage(message);
-                return Ok(response);
+                await this._restVendor.SendMessage(message);
+                return CreatedAtRoute("", new { Id = message.Id }, message);
             }
 
-            return BadRequest(); 
+            return BadRequest();
         }
     }
 }

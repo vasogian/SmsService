@@ -4,17 +4,26 @@ using SmsService.Models;
 
 namespace SmsService.Services
 {
-    public class SMSVendorGR : ISms
+    public class SMSVendorGR /*: ISms*/
     {
-        public string Message { get; set; }
-        public string PhoneNumber { get; set; }
+        //public string Message { get; set; }
+        //public string PhoneNumber { get; set; }
 
-        public ActionResult<SmsMessage> SendMessage(SmsMessage message)
+        private readonly ContextService _contextService;
+        public SMSVendorGR(ContextService contextService)
+        {
+            _contextService = contextService;
+
+        }
+
+        public async Task<SmsMessage> SendMessage(SmsMessage message)
         {
             if (message == null)
             {
                 return new SmsMessage();
             }
+            await _contextService.AddMessageToDbFromGr(message);
+
             return message;
 
         }
