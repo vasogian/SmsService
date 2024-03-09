@@ -1,7 +1,7 @@
-using SmsService.Models;
 using Microsoft.EntityFrameworkCore;
 using SmsService.Interfaces;
 using SmsService.Services;
+using SmsService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,9 +13,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MessageContext>(options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddScoped<SMSVendorGR>();
-builder.Services.AddScoped<SMSVendorCY>();
-builder.Services.AddScoped<SMSVendorRest>();
+builder.Services.AddScoped< IProvider,SMSVendorGR>();
+builder.Services.AddScoped<IProvider,SMSVendorCY>();
+builder.Services.AddScoped<IProvider,SMSVendorRest>();
 builder.Services.AddScoped<ContextService>();
 
 

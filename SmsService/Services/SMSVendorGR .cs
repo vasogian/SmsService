@@ -4,11 +4,8 @@ using SmsService.Models;
 
 namespace SmsService.Services
 {
-    public class SMSVendorGR /*: ISms*/
+    public class SMSVendorGR :IProvider
     {
-        //public string Message { get; set; }
-        //public string PhoneNumber { get; set; }
-
         private readonly ContextService _contextService;
         public SMSVendorGR(ContextService contextService)
         {
@@ -16,16 +13,9 @@ namespace SmsService.Services
 
         }
 
-        public async Task<SmsMessage> SendMessage(SmsMessage message)
+        public Task<SmsMessage> Send(SmsMessage message)
         {
-            if (message == null)
-            {
-                return new SmsMessage();
-            }
-            await _contextService.AddMessageToDbFromGr(message);
-
-            return message;
-
+            throw new NotImplementedException();
         }
 
     }

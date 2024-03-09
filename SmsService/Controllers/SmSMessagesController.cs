@@ -4,7 +4,6 @@ using SmsService.Interfaces;
 using SmsService.Models;
 using SmsService.Services;
 using System.Linq;
-using SmsService.Validation;
 using System.Text.RegularExpressions;
 using SmsService.ViewModels;
 using AutoMapper;
@@ -15,69 +14,80 @@ namespace SmsService.Controllers
     [ApiController]
     public class SmSMessagesController : ControllerBase
     {
-        private readonly SMSVendorGR _greekVendor;
-        private readonly SMSVendorCY _cypriotVendor;
-        private readonly SMSVendorRest _restVendor;
+        private readonly IEnumerable<IProvider> _provider;
         private readonly IMapper _mapper;
-        public SmSMessagesController(SMSVendorGR greekVendor, SMSVendorCY cypriotVendor, SMSVendorRest restVendor, IMapper mapper)
+        public SmSMessagesController(IMapper mapper, IEnumerable<IProvider> provider)
         {
             _mapper = mapper;
-            _greekVendor = greekVendor;
-            _cypriotVendor = cypriotVendor;
-            _restVendor = restVendor;
+            _provider = provider;
+
         }
 
         [HttpPost]
         public async Task<IActionResult> SendSms(SmsMessageRequestViewModel message)
         {
-            var phoneNumber = message.PhoneNumber;
+            var messageToPersist = _mapper.Map<SmsMessage>(message);
 
-            if (String.IsNullOrEmpty(phoneNumber))
+            SmsMessageSucccessResponseViewModel mappedResponse = null;
+
+            foreach (var provider in _provider)
             {
-                return BadRequest();
-            }
-            
-            string greekFromat = @"^\+30[2-9][0-9]{9}$";
+                await provider.Send(messageToPersist);
+                
+                 mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(messageToPersist);
 
-            string cypriot = @"^\+357[2-9][0-9]{6,7}$";
-
-            string restPhoneNumbers = @"^([\+]?123[-]?|[0])?[1-9][0-9]{8}$";
-
-            bool isGreek = Regex.IsMatch(phoneNumber, greekFromat);
-
-            bool isCypriot = Regex.IsMatch(phoneNumber, cypriot);
-
-            bool isOther = Regex.IsMatch(phoneNumber, restPhoneNumbers);
-          
-            if (isGreek)
-            {
-                var mappedMessageRequest = _mapper.Map<SmsMessage>(message);
-                await this._greekVendor.SendMessage(mappedMessageRequest);
-
-                var mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(mappedMessageRequest);
-                return CreatedAtRoute("", new { Id = mappedResponse.Id }, mappedResponse);
+                if(mappedResponse != null)
+                {
+                    break;
+                }
 
             }
+            return CreatedAtRoute("", mappedResponse);
 
-            else if (isCypriot)
-            {
-                var mappedMessageRequest = _mapper.Map<SmsMessage>(message);
+            // char[] letters = new char[] { 'Α', 'Β', 'Γ', 'Δ', 'Ε', 'Ζ', 'Η', 'Θ', 'Ι', 'Κ', 'Λ', 'Μ', 'Ν', 'Ξ', 'Ο', 'Π', 'Ρ', 'Σ', 'Τ', 'Υ', 'Φ', 'Χ', 'Ψ', 'Ω' };      
 
-                await this._cypriotVendor.SendMessage(mappedMessageRequest);
+            //string greekFromat = @"^\+30[2-9][0-9]{9}$";
 
-                var mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(mappedMessageRequest);
+            //string cypriot = @"^\+357[2-9][0-9]{6,7}$";
 
-                return CreatedAtRoute("", new { Id = mappedResponse.Id }, mappedResponse);
-            }
-            else if (isOther)
-            {
-                var mappedMessageRequest = _mapper.Map<SmsMessage>(message);
-                await this._restVendor.SendMessage(mappedMessageRequest);
-                var mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(mappedMessageRequest);
-                return CreatedAtRoute("", new { Id = mappedResponse.Id }, mappedResponse);
-            }
+            //string restPhoneNumbers = @"^([\+]?123[-]?|[0])?[1-9][0-9]{8}$";
 
-            return BadRequest();
+            //bool isGreek = Regex.IsMatch(phoneNumber, greekFromat);
+
+            //bool isCypriot = Regex.IsMatch(phoneNumber, cypriot);
+
+            //bool isOther = Regex.IsMatch(phoneNumber, restPhoneNumbers);
+
+            //    if (isGreek)
+            //    {
+
+            //        var mappedMessageRequest = _mapper.Map<SmsMessage>(message);
+            //    await this._greekVendor.SendMessage(mappedMessageRequest);
+
+            //    var mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(mappedMessageRequest);
+            //    return CreatedAtRoute("", new { Id = mappedResponse.Id }, mappedResponse);
+
+            //}
+
+            //    else if (isCypriot)
+            //    {
+            //        var mappedMessageRequest = _mapper.Map<SmsMessage>(message);
+
+            //        await this._cypriotVendor.SendMessage(mappedMessageRequest);
+
+            //        var mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(mappedMessageRequest);
+
+            //        return CreatedAtRoute("", new { Id = mappedResponse.Id }, mappedResponse);
+            //    }
+            //    else if (isOther)
+            //    {
+            //        var mappedMessageRequest = _mapper.Map<SmsMessage>(message);
+            //        await this._restVendor.SendMessage(mappedMessageRequest);
+            //        var mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(mappedMessageRequest);
+            //        return CreatedAtRoute("", new { Id = mappedResponse.Id }, mappedResponse);
+            //    }
+
+            //    return BadRequest();
         }
     }
 }

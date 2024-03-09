@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SmsService.Models;
+using SmsService.Infrastructure;
 
 #nullable disable
 
 namespace SmsService.Migrations
 {
     [DbContext(typeof(MessageContext))]
-    [Migration("20240307121210_changedTableName")]
-    partial class changedTableName
+    [Migration("20240307115909_InitialState")]
+    partial class InitialState
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,7 +37,7 @@ namespace SmsService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Students");
                 });
 #pragma warning restore 612, 618
         }
