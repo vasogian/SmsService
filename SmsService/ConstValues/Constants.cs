@@ -1,4 +1,4 @@
-﻿namespace SmsService.Constants
+﻿namespace SmsService.ConstValues
 {
     public class Constants
     {

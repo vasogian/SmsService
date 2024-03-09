@@ -15,14 +15,7 @@ namespace SmsService.Services
         {
             if (message != null)
             {
-                var entryToAdd = new SmsMessage
-                {
-                    Id = message.Id,
-                    Message = message.Message,
-                    PhoneNumber = message.PhoneNumber,
-                    Country = Constants.Constants.entryforGreece
-                };
-                _context.Messages.Add(entryToAdd);
+                _context.Messages.Add(message); //persists entry to db
                 await _context.SaveChangesAsync();
 
             }

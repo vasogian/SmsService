@@ -11,27 +11,22 @@ namespace SmsService.Services
         public GreekProvider(ContextService contextService)
         {
             _contextService = contextService;
-
         }
 
-        public async Task<SmsMessage> Send(SmsMessage message)
+        public async Task<SmsMessage?> Send(SmsMessage message)
         {
-            string greekFromatForPhoneNum = @"^\+30[2-9][0-9]{9}$"; 
+            bool isGreekFormatForNum = Regex.IsMatch(message.PhoneNumber, @"^\+30[2-9][0-9]{9}$");
 
-            bool isGreekFormatForNum = Regex.IsMatch(message.PhoneNumber, greekFromatForPhoneNum);
-
-            bool isGreekFormatForText = Regex.IsMatch(message.Message, @"^[\p{IsGreek}]+$");
+            bool isGreekFormatForText = Regex.IsMatch(message.Message, @"^[α-ωΑ-Ω\s]*$");
 
             if(isGreekFormatForNum && isGreekFormatForText)
             {
-                message.Country = Constants.Constants.entryforGreece;
+                message.Country = ConstValues.Constants.entryforGreece;
                 await _contextService.PersistMessageToDb(message);
 
                 return message;
             }
-            return null;
-           
+            return null;         
         }
-
     }
 }

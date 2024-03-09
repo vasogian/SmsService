@@ -3,6 +3,6 @@
     public class SmsMessageSucccessResponseViewModel
     {
         
-        public string Response { get; } = Constants.Constants.responseSuccess;
+        public string Response { get; } = ConstValues.Constants.responseSuccess;
     }
 }

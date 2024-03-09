@@ -12,9 +12,9 @@ namespace SmsService.Services
             _contextService = contextService;
         }
 
-        public Task<SmsMessage> Send(SmsMessage message)
+        public async Task<SmsMessage> Send(SmsMessage message)
         {
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

@@ -13,9 +13,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MessageContext>(options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddScoped< IProvider,SMSVendorGR>();
+builder.Services.AddScoped< IProvider,GreekProvider>();
 builder.Services.AddScoped<IProvider,SMSVendorCY>();
-builder.Services.AddScoped<IProvider,SMSVendorRest>();
+builder.Services.AddScoped<IProvider,ProviderRest>();
 builder.Services.AddScoped<ContextService>();
 
 

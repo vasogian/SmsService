@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using SmsService.Constants;
+using SmsService.ConstValues;
 
 namespace SmsService.Models
 {
@@ -10,7 +10,7 @@ namespace SmsService.Models
         public string Message { get; set; } 
         [Phone]
         public string PhoneNumber { get; set; }
-        [MaxLength(Constants.Constants.maxSmsMessageLength)]
+        [MaxLength(ConstValues.Constants.maxSmsMessageLength)]
         public string? Country { get; set; }
     }
 }

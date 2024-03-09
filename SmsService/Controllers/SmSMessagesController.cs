@@ -32,12 +32,11 @@ namespace SmsService.Controllers
 
             foreach (var provider in _provider)
             {
-                await provider.Send(messageToPersist);
-                
-                 mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(messageToPersist);
+                var result = await  provider.Send(messageToPersist);
 
-                if(mappedResponse != null)
+                if (result != null)
                 {
+                    mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(messageToPersist);
                     break;
                 }
             }
