@@ -40,7 +40,6 @@ namespace SmsService.Controllers
                 {
                     break;
                 }
-
             }
             return CreatedAtRoute("", mappedResponse);
 
