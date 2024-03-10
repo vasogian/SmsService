@@ -14,32 +14,57 @@ namespace SmsService.Services
             _contextService = contextService;
         }
 
-        public async Task<SmsMessage?> Send(SmsMessage message)
+        public async Task<List<SmsMessage>> Send(SmsMessage message)
         {
             int messageLength = message.Message.Length;
+
+            var listForMultipleMessages = new List<SmsMessage>();//in case text exceeds 160 chars
+
+            var listForASingleMessage = new List<SmsMessage>();
+
             bool isCypriotNum = Regex.IsMatch(message.PhoneNumber, @"^\+357[2-9][0-9]{6,7}$");
 
             if (isCypriotNum)
             {
                 if (messageLength > ConstValues.Constants.maxCypriotSmsMessageLength)
                 {
-                    //var length = messageLength / ConstValues.Constants.maxCypriotSmsMessageLength;
-                    SmsMessage message2 = new SmsMessage();
-                    message2.PhoneNumber = message.PhoneNumber;
-                    message2.Message = message.Message.Substring(Constants.maxCypriotSmsMessageLength);
-                    message2.Country = message.Country = Constants.entryforCyprus;
+                    string messageString = message.Message;
+                    var messages = SplitText(messageString, ConstValues.Constants.maxCypriotSmsMessageLength);
 
-                    await _contextService.PersistMessageToDb(message2);
-                    return message;
+                    foreach (var item in messages)
+                    {
+
+                        SmsMessage chainedMessage = new SmsMessage
+                        {
+                            PhoneNumber = message.PhoneNumber,
+                            Message = item,
+                            Country = ConstValues.Constants.entryforCyprus
+                        };
+
+                        listForMultipleMessages.Add(chainedMessage);
+                    }
+                    await _contextService.PersistMessageToDbForCypriotMessages(listForMultipleMessages);
+
+                    return listForMultipleMessages;
 
                 }
                 message.Country = Constants.entryforCyprus;
 
                 await _contextService.PersistMessageToDb(message);
 
-                return message;
+                listForASingleMessage.Add(message);
+
+                return listForASingleMessage;
+
             }
             return null;
         }
+
+        static IEnumerable<string> SplitText(string text, int length)
+        {
+            return Enumerable.Range(0, text.Length / length)
+                .Select(i => text.Substring(i * length, length));
+        }
+
     }
 }

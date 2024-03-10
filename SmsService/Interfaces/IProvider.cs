@@ -5,6 +5,6 @@ namespace SmsService.Interfaces
 {
     public interface IProvider
     {     
-        public Task<SmsMessage?> Send(SmsMessage message);
+        public Task<List<SmsMessage?>> Send(SmsMessage message);
     }
 }

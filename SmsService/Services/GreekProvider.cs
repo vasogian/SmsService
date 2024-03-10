@@ -13,8 +13,9 @@ namespace SmsService.Services
             _contextService = contextService;
         }
 
-        public async Task<SmsMessage?> Send(SmsMessage message)
+        public async Task<List<SmsMessage>> Send(SmsMessage message)
         {
+            var greekMessagesList = new List<SmsMessage>();
             bool isGreekFormatForNum = Regex.IsMatch(message.PhoneNumber, @"^\+30[2-9][0-9]{9}$");
 
             bool isGreekFormatForText = Regex.IsMatch(message.Message, @"^[α-ωΑ-Ω\s]*$");
@@ -24,7 +25,9 @@ namespace SmsService.Services
                 message.Country = ConstValues.Constants.entryforGreece;
                 await _contextService.PersistMessageToDb(message);
 
-                return message;
+                greekMessagesList.Add(message);
+
+               return greekMessagesList;
             }
             return null;         
         }

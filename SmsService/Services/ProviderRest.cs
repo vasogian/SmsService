@@ -13,12 +13,15 @@ namespace SmsService.Services
 
         }
 
-        public async Task<SmsMessage?> Send(SmsMessage message)
+        public async Task<List<SmsMessage>> Send(SmsMessage message)
         {
+            var messagesForRestList = new List<SmsMessage>();
             message.Country = ConstValues.Constants.entryforOther;
             await _contextService.PersistMessageToDb(message);
 
-            return message;
+            messagesForRestList.Add(message);
+
+            return messagesForRestList;
         }
     }
 }
