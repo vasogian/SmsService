@@ -14,8 +14,8 @@ builder.Services.AddDbContext<MessageContext>(options => options.UseSqlServer("n
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped< IProvider,GreekProvider>();
 builder.Services.AddScoped<IProvider,CypriotProvider>();
-builder.Services.AddScoped<IProvider,ProviderRest>();
-builder.Services.AddScoped<ContextService>();
+builder.Services.AddScoped<IProvider,RestOfTheWorldProvider>();
+builder.Services.AddScoped<IContextService, ContextService>();
 
 
 var app = builder.Build();

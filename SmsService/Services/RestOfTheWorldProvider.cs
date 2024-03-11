@@ -4,10 +4,10 @@ using SmsService.Models;
 
 namespace SmsService.Services
 {
-    public class ProviderRest :IProvider
+    public class RestOfTheWorldProvider :IProvider
     {
         private readonly ContextService _contextService;
-        public ProviderRest(ContextService contextService)
+        public RestOfTheWorldProvider(ContextService contextService)
         {
             _contextService = contextService;
 

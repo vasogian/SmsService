@@ -1,9 +1,12 @@
 ﻿using SmsService.Infrastructure;
 using SmsService.Models;
+using SmsService.Interfaces;
 
 namespace SmsService.Services
 {
-    public class ContextService
+
+
+    public class ContextService : IContextService
     {
         private readonly MessageContext _context;
         public ContextService(MessageContext context)
@@ -11,25 +14,26 @@ namespace SmsService.Services
             _context = context;
         }
 
-        public async Task<SmsMessage> PersistMessageToDb(SmsMessage message)
+        public async Task<SmsMessage> PersistMessageToDb(SmsMessage? message)
         {
             if (message != null)
             {
-                _context.Messages.Add(message); //persists entry to db
+                var entityToAdd = _context.Messages.Add(message); //persists entry to db
                 await _context.SaveChangesAsync();
-
+                return entityToAdd.Entity;
             }
+
             return new SmsMessage();
         }
 
         public async Task<List<SmsMessage>> PersistMessageToDbForCypriotMessages(List<SmsMessage> messages)
         {
-            if (messages != null)
+            if (messages.Count > 0)
             {
                 _context.Messages.AddRange(messages); //persists entries for multiple cypriot messages to db
                 await _context.SaveChangesAsync();
-
             }
+
             return new List<SmsMessage>();
         }
 
