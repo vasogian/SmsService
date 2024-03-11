@@ -1,4 +1,4 @@
-﻿namespace SmsService.Constants
+﻿namespace SmsService.ConstValues
 {
     public class Constants
     {
@@ -6,6 +6,7 @@
         public const string entryforCyprus = "CY";
         public const string entryforOther = "OTHER";
         public const int maxSmsMessageLength = 480;
+        public const int maxCypriotSmsMessageLength = 160;
         public const string responseSuccess = "Message has been sent!";
 
     }

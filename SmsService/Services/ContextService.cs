@@ -1,8 +1,12 @@
-﻿using SmsService.Models;
+﻿using SmsService.Infrastructure;
+using SmsService.Models;
+using SmsService.Interfaces;
 
 namespace SmsService.Services
 {
-    public class ContextService
+
+
+    public class ContextService : IContextService
     {
         private readonly MessageContext _context;
         public ContextService(MessageContext context)
@@ -10,58 +14,30 @@ namespace SmsService.Services
             _context = context;
         }
 
-        public async Task<SmsMessage> AddMessageToDbFromGr(SmsMessage message)
+        public async Task<SmsMessage> PersistMessageToDb(SmsMessage? message)
         {
             if (message != null)
             {
-                var entryToAdd = new SmsMessage
-                {
-                    Id = message.Id,
-                    Message = message.Message,
-                    PhoneNumber = message.PhoneNumber,
-                    Country = Constants.Constants.entryforGreece
-                };
-                _context.Messages.Add(entryToAdd);
+                var entityToAdd = _context.Messages.Add(message); //persists entry to db
                 await _context.SaveChangesAsync();
-
+                return entityToAdd.Entity;
             }
+
             return new SmsMessage();
         }
 
-        public async Task<SmsMessage> AddMessageToDbFromCY(SmsMessage message)
+        public async Task<int> PersistMessageToDbForCypriotMessages(List<SmsMessage> messages)
         {
-            if (message != null)
+            if (messages.Count > 0)
             {
-                var entryToAdd = new SmsMessage
-                {
-                    Id = message.Id,
-                    Message = message.Message,
-                    PhoneNumber = message.PhoneNumber,
-                    Country = Constants.Constants.entryforCyprus
-                };
-                _context.Messages.Add(entryToAdd);
-                await _context.SaveChangesAsync();
+                _context.Messages.AddRange(messages); //persists entries for multiple cypriot messages to db
+                int rowsAffected = await _context.SaveChangesAsync();
 
+                return rowsAffected;
             }
-            return new SmsMessage();
+
+            return default;
         }
 
-        public async Task<SmsMessage> AddMessageToDbFromRest(SmsMessage message)
-        {
-            if (message != null)
-            {
-                var entryToAdd = new SmsMessage
-                {
-                    Id = message.Id,
-                    Message = message.Message,
-                    PhoneNumber = message.PhoneNumber,
-                    Country = Constants.Constants.entryforOther
-                };
-                 _context.Messages.Add(entryToAdd);
-                await _context.SaveChangesAsync();
-
-            }
-            return new SmsMessage();
-        }
     }
 }

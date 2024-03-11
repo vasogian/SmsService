@@ -4,7 +4,7 @@ namespace SmsService.ViewModels
 {
     public class SmsMessageRequestViewModel
     {
-        public int Id { get; set; }
+        [MaxLength(ConstValues.Constants.maxSmsMessageLength)]
         public string Message { get; set; }
         [Phone]
         public string PhoneNumber { get; set; }

@@ -7,7 +7,7 @@
         {
             CreateMap<ViewModels.SmsMessageRequestViewModel, Models.SmsMessage>();
             CreateMap<Models.SmsMessage, ViewModels.SmsMessageRequestViewModel>();
-            CreateMap<Models.SmsMessage, ViewModels.SmsMessageSucccessResponseViewModel>();
+            CreateMap<Models.SmsMessage, ViewModels.SmsMessageSuccessResponseViewModel>();
         }
         
     }

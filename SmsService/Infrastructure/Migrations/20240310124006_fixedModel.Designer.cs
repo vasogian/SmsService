@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SmsService.Models;
+using SmsService.Infrastructure;
 
 #nullable disable
 
 namespace SmsService.Migrations
 {
     [DbContext(typeof(MessageContext))]
-    [Migration("20240308090552_addedCountryProperty")]
-    partial class addedCountryProperty
+    [Migration("20240310124006_fixedModel")]
+    partial class fixedModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,7 +36,8 @@ namespace SmsService.Migrations
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(480)
+                        .HasColumnType("nvarchar(480)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()

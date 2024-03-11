@@ -1,14 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmsService.Models;
 
-namespace SmsService.Models
+namespace SmsService.Infrastructure
 {
-    public class MessageContext : Microsoft.EntityFrameworkCore.DbContext
+    public class MessageContext : DbContext
     {
         public MessageContext(DbContextOptions<MessageContext> options)
            : base(options)
         {
         }
-        public DbSet<SmsMessage>? Messages { get; set; }
-      
+        public DbSet<SmsMessage> Messages { get; set; }
+
     }
 }

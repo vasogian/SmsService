@@ -1,11 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SmsService.Interfaces;
 using SmsService.Models;
-using SmsService.Services;
-using System.Linq;
-using SmsService.Validation;
-using System.Text.RegularExpressions;
 using SmsService.ViewModels;
 using AutoMapper;
 
@@ -15,69 +10,39 @@ namespace SmsService.Controllers
     [ApiController]
     public class SmSMessagesController : ControllerBase
     {
-        private readonly SMSVendorGR _greekVendor;
-        private readonly SMSVendorCY _cypriotVendor;
-        private readonly SMSVendorRest _restVendor;
+        private readonly IEnumerable<IProvider> _providers;
         private readonly IMapper _mapper;
-        public SmSMessagesController(SMSVendorGR greekVendor, SMSVendorCY cypriotVendor, SMSVendorRest restVendor, IMapper mapper)
+        public SmSMessagesController(IMapper mapper, IEnumerable<IProvider> provider)
         {
             _mapper = mapper;
-            _greekVendor = greekVendor;
-            _cypriotVendor = cypriotVendor;
-            _restVendor = restVendor;
+            _providers = provider;
         }
 
+
         [HttpPost]
+        [ProducesResponseType(typeof(SmsMessageSuccessResponseViewModel), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SendSms(SmsMessageRequestViewModel message)
         {
-            var phoneNumber = message.PhoneNumber;
+            SmsMessage messageToPersist = _mapper.Map<SmsMessage>(message);
 
-            if (String.IsNullOrEmpty(phoneNumber))
+            SmsMessageSuccessResponseViewModel mappedResponse = new SmsMessageSuccessResponseViewModel()
             {
-                return BadRequest();
-            }
-            
-            string greekFromat = @"^\+30[2-9][0-9]{9}$";
+                Response = "Message not sent! Try again!",
+                PhoneNumber = null
+            };
 
-            string cypriot = @"^\+357[2-9][0-9]{6,7}$";
-
-            string restPhoneNumbers = @"^([\+]?123[-]?|[0])?[1-9][0-9]{8}$";
-
-            bool isGreek = Regex.IsMatch(phoneNumber, greekFromat);
-
-            bool isCypriot = Regex.IsMatch(phoneNumber, cypriot);
-
-            bool isOther = Regex.IsMatch(phoneNumber, restPhoneNumbers);
-          
-            if (isGreek)
+            foreach (var provider in _providers)
             {
-                var mappedMessageRequest = _mapper.Map<SmsMessage>(message);
-                await this._greekVendor.SendMessage(mappedMessageRequest);
+                List<SmsMessage> result = await provider.Send(messageToPersist);
 
-                var mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(mappedMessageRequest);
-                return CreatedAtRoute("", new { Id = mappedResponse.Id }, mappedResponse);
-
+                if (result.Count > 0)
+                {
+                    mappedResponse = _mapper.Map<SmsMessageSuccessResponseViewModel>(messageToPersist);
+                    break;
+                }
             }
-
-            else if (isCypriot)
-            {
-                var mappedMessageRequest = _mapper.Map<SmsMessage>(message);
-
-                await this._cypriotVendor.SendMessage(mappedMessageRequest);
-
-                var mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(mappedMessageRequest);
-
-                return CreatedAtRoute("", new { Id = mappedResponse.Id }, mappedResponse);
-            }
-            else if (isOther)
-            {
-                var mappedMessageRequest = _mapper.Map<SmsMessage>(message);
-                await this._restVendor.SendMessage(mappedMessageRequest);
-                var mappedResponse = _mapper.Map<SmsMessageSucccessResponseViewModel>(mappedMessageRequest);
-                return CreatedAtRoute("", new { Id = mappedResponse.Id }, mappedResponse);
-            }
-
-            return BadRequest();
+            return CreatedAtRoute("", mappedResponse);
         }
     }
 }
