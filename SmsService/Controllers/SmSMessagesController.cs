@@ -34,7 +34,7 @@ namespace SmsService.Controllers
 
             foreach (var provider in _providers)
             {
-                List<SmsMessage?> result = await provider.Send(messageToPersist);
+                List<SmsMessage> result = await provider.Send(messageToPersist);
 
                 if (result.Count > 0)
                 {
