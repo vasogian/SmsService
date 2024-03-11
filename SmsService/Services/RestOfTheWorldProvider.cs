@@ -1,25 +1,29 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SmsService.Interfaces;
+﻿using SmsService.Interfaces;
 using SmsService.Models;
 
 namespace SmsService.Services
 {
-    public class RestOfTheWorldProvider :IProvider
+    public class RestOfTheWorldProvider : IProvider
     {
-        private readonly ContextService _contextService;
-        public RestOfTheWorldProvider(ContextService contextService)
+        private readonly IContextService _contextService;
+        public RestOfTheWorldProvider(IContextService contextService)
         {
             _contextService = contextService;
 
         }
-
         public async Task<List<SmsMessage>> Send(SmsMessage message)
         {
+            if (message.PhoneNumber.StartsWith("+30") ||
+                message.PhoneNumber.StartsWith("+357"))
+            {
+                return new List<SmsMessage>();
+            }
+
             var messagesForRestList = new List<SmsMessage>();
             message.Country = ConstValues.Constants.entryforOther;
-            await _contextService.PersistMessageToDb(message);
+            var messagedAdded = await _contextService.PersistMessageToDb(message);
 
-            messagesForRestList.Add(message);
+            messagesForRestList.Add(messagedAdded);
 
             return messagesForRestList;
         }

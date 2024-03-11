@@ -28,8 +28,7 @@ namespace SmsService.Controllers
 
             SmsMessageSuccessResponseViewModel mappedResponse = new SmsMessageSuccessResponseViewModel()
             {
-                Response = "fail",
-                Country = null,
+                Response = "Message not sent! Try again!",
                 PhoneNumber = null
             };
 

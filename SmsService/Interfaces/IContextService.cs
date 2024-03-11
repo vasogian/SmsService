@@ -4,6 +4,6 @@
     public interface IContextService
     {
         Task<SmsMessage> PersistMessageToDb(SmsMessage? message);
-        Task<List<SmsMessage>> PersistMessageToDbForCypriotMessages(List<SmsMessage> messages);
+        Task<int> PersistMessageToDbForCypriotMessages(List<SmsMessage> messages);
     }
 }

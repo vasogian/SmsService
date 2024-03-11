@@ -26,15 +26,17 @@ namespace SmsService.Services
             return new SmsMessage();
         }
 
-        public async Task<List<SmsMessage>> PersistMessageToDbForCypriotMessages(List<SmsMessage> messages)
+        public async Task<int> PersistMessageToDbForCypriotMessages(List<SmsMessage> messages)
         {
             if (messages.Count > 0)
             {
                 _context.Messages.AddRange(messages); //persists entries for multiple cypriot messages to db
-                await _context.SaveChangesAsync();
+                int rowsAffected = await _context.SaveChangesAsync();
+
+                return rowsAffected;
             }
 
-            return new List<SmsMessage>();
+            return default;
         }
 
     }
