@@ -18,6 +18,10 @@ namespace SmsService.Services
         {
             var messagesToReturn = new List<SmsMessage>();
 
+            if(message.PhoneNumber == null)
+            {
+                return messagesToReturn;
+            }
             bool isCypriotNum = Regex.IsMatch(message.PhoneNumber, @"^\+357[2-9][0-9]{6,7}$");
 
             if (!isCypriotNum)
