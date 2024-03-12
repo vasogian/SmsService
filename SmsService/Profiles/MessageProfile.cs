@@ -6,7 +6,6 @@
         public MessageProfile()
         {
             CreateMap<ViewModels.SmsMessageRequestViewModel, Models.SmsMessage>();
-            CreateMap<Models.SmsMessage, ViewModels.SmsMessageRequestViewModel>();
             CreateMap<Models.SmsMessage, ViewModels.SmsMessageSuccessResponseViewModel>();
         }
         

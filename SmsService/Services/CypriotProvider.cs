@@ -18,6 +18,10 @@ namespace SmsService.Services
         {
             var messagesToReturn = new List<SmsMessage>();
 
+            if(message.PhoneNumber == null)
+            {
+                return messagesToReturn;
+            }
             bool isCypriotNum = Regex.IsMatch(message.PhoneNumber, @"^\+357[2-9][0-9]{6,7}$");
 
             if (!isCypriotNum)
@@ -30,6 +34,7 @@ namespace SmsService.Services
             if (messageLength > ConstValues.Constants.maxCypriotSmsMessageLength)
             {
                 string messageString = message.Message;
+
                 var messages = SplitText(messageString, ConstValues.Constants.maxCypriotSmsMessageLength);
 
                 foreach (var item in messages)
@@ -49,7 +54,6 @@ namespace SmsService.Services
                 {
                     return messagesToReturn;
                 }
-
                 return new List<SmsMessage>();
             }
 
