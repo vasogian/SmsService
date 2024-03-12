@@ -20,7 +20,9 @@ namespace SmsService.Services
             }
 
             var messagesForRestList = new List<SmsMessage>();
+
             message.Country = ConstValues.Constants.entryforOther;
+
             var messagedAdded = await _contextService.PersistMessageToDb(message);
 
             messagesForRestList.Add(messagedAdded);

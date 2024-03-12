@@ -34,6 +34,7 @@ namespace SmsService.Services
             if (messageLength > ConstValues.Constants.maxCypriotSmsMessageLength)
             {
                 string messageString = message.Message;
+
                 var messages = SplitText(messageString, ConstValues.Constants.maxCypriotSmsMessageLength);
 
                 foreach (var item in messages)
@@ -53,7 +54,6 @@ namespace SmsService.Services
                 {
                     return messagesToReturn;
                 }
-
                 return new List<SmsMessage>();
             }
 

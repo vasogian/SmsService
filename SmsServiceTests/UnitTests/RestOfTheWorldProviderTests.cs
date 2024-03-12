@@ -31,8 +31,8 @@ namespace SmsServiceTests.UnitTests
             List<SmsMessage> result = await sut.Send(message);
 
             Assert.Empty(result);
-
         }
+
         [Fact]
         public async Task When_Input_IsValid_Send()
         {
@@ -50,6 +50,5 @@ namespace SmsServiceTests.UnitTests
 
             Assert.Single(result);
         }
-
     }
 }

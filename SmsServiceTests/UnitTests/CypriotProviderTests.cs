@@ -55,7 +55,7 @@ namespace SmsServiceTests.UnitTests
 
             CypriotProvider sut = new CypriotProvider(contextServiceMock.Object);
 
-            string message = "wejdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrhfbjkfwefkjhwejfhwjfuwhfwjfhkkkkkkkkkkkkfwhjghhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhheiiiiiiiiiiiiiiiiiiiiiiiiiiiiii";
+            string message = "wejdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrhfbjkfwefkjhwejfhwjfuwhfwjfhkkkkkkkkkkkkfwhjghhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhheiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiedrffffffffffffffffffffffffffffgggggggggggggggggggggggggggggggggggggggggg";
 
             SmsMessage messageToSend = new SmsMessage()
             {
@@ -63,26 +63,10 @@ namespace SmsServiceTests.UnitTests
                 Message = message
 
             };
-            List<SmsMessage> result = await sut.Send(messageToSend);
+           
+            contextServiceMock.Setup(x => x.PersistMessageToDbForCypriotMessages(It.IsAny<List<SmsMessage>>())).ReturnsAsync(2);
 
-            Assert.Single(result);
-
-        }
-        public async Task When_Message_Exceeds_380_Length()
-        {
-            Mock<IContextService> contextServiceMock = new Mock<IContextService>();
-
-            CypriotProvider sut = new CypriotProvider(contextServiceMock.Object);
-
-            string message = "wejdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrdrhfbjkfwefkjhwejfhwjfuwhfwjfhkkkkkkkkkkkkfwhjeiiiiiiiiiiiiiiiiiiiiiiiiiiiiiihwejfhwjfuwhfwjfhkkkkkkkkkkkkfwhjeiiiiiiiiiiiiiiiiiiiiiiihwejfhwjfuwhfwjfhkkkkkkkkkkkkfwhjeiiiiiiiiiiiiiiiiiiiiiiihwejfhwjfuwhfwjfhkkkkkkkkkkkkfwhjeiiiiiiiiiiiiiiiiiiiiiiihwejfhwjfuwhfwjfhkkkkkkkkkkkkfwhjeiiiiiiiiiythjyrtjeiiiiiiiiiiiiiiiiiiiiiii";
-
-            SmsMessage messageToSend = new SmsMessage()
-            {
-                PhoneNumber = "+3574611111",
-                Message = message
-
-            };
-            List<SmsMessage> result = await sut.Send(messageToSend);
+            var result = await sut.Send(messageToSend);
 
             Assert.Equal(2, result.Count);
 

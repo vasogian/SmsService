@@ -22,7 +22,6 @@ namespace SmsService.Services
                 await _context.SaveChangesAsync();
                 return entityToAdd.Entity;
             }
-
             return new SmsMessage();
         }
 
@@ -35,9 +34,7 @@ namespace SmsService.Services
 
                 return rowsAffected;
             }
-
             return default;
         }
-
     }
 }

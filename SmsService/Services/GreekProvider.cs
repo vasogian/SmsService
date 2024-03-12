@@ -36,7 +36,6 @@ namespace SmsService.Services
 
                 return greekMessagesList;
             }
-
             return new List<SmsMessage>();
         }
     }
